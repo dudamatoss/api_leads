@@ -1,3 +1,5 @@
+import 'package:api_leads/src/modules/leads/enum/interesse_enum.dart';
+import 'package:api_leads/src/modules/leads/enum/ststus_enum.dart';
 import 'package:vaden/vaden.dart';
 
 
@@ -9,11 +11,11 @@ class LeadDto {
   final String email;
   final String cnpj;
   final String telefone;
-  final String interesse;
+  final InteresseEnum interesse;
   final String fonte;
   final String meio;
   final String anuncio;
-  final String status;
+  final StatusEnum status;
 
   LeadDto({
     required this.id_leads_comercial,

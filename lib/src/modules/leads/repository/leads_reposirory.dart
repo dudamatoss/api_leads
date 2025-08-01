@@ -1,4 +1,6 @@
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
+import 'package:api_leads/src/modules/leads/enum/interesse_enum.dart';
+import 'package:api_leads/src/modules/leads/enum/ststus_enum.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/shared/database/database.dart';
 import 'package:vaden/vaden.dart';
@@ -43,15 +45,7 @@ class LeadsRepository implements ILeadsRepository {
   Map<String, dynamic> toMap(LeadDto entity) {
     return {
       'id_lead': entity.id_leads_comercial,
-      'data_hora': entity.data_hora.toIso8601String(),
-      'nome': entity.nome,
-      'email': entity.email,
-      'cnpj': entity.cnpj,
-      'telefone': entity.telefone,
       'interesse': entity.interesse,
-      'fonte': entity.fonte,
-      'meio': entity.meio,
-      'anuncio': entity.anuncio,
       'status': entity.status,
     };
   }
@@ -63,9 +57,15 @@ class LeadsRepository implements ILeadsRepository {
     cnpj: map['cnpj'],
     anuncio: map['anuncio'],
     meio: map['meio'],
-    status: map['status'],
+    status: StatusEnum.values.firstWhere(
+          (e) => e.name == map['status'],
+      orElse: () => StatusEnum.pendente,
+    ),
     fonte: map['fonte'],
-    interesse: map['interesse'],
+    interesse: InteresseEnum.values.firstWhere(
+          (e) => e.name == map['interesse'],
+      orElse: () => InteresseEnum.utilizacao,
+    ),
     data_hora: map['data_hora'],
   );
 

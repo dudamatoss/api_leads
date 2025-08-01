@@ -12,38 +12,27 @@ import 'package:vaden/vaden.dart';
     required Map<String, dynamic> values,
     TxSession? txn,
   }) async {
-    final filteredValues = Map<String, dynamic>.from(values);
-
+    final updateValues = Map<String, dynamic>.from(values);
     final idColumn = 'id_$tableName';
-    //remove o id da tabela se ele for nulo
-    if (filteredValues[idColumn] == null) {
-      filteredValues.remove(idColumn);
-    }
-    // Cria a lista de colunas e parâmetros para a query
-    final columns = filteredValues.keys.join(', ');
-    final params = filteredValues.keys.map((e) => '@$e').join(', ');
+    final idValue = updateValues.remove(idColumn);
 
-    String query;
-  // Verifica se a tabela possui o id e cria a query de inserção ou atualização
-    if (filteredValues.containsKey(idColumn)) {
-      final updateSet = filteredValues.keys
-          .where((key) => key != idColumn)
-          .map((key) => '$key = EXCLUDED.$key')
+    // Cria a lista de colunas e parâmetros para a query
+    final columns = updateValues.keys.join(', ');
+    final params = updateValues.keys.map((e) => '@$e').join(', ');
+    // Verifica se a tabela possui o id e cria a query de inserção ou atualização
+      final updateSet = updateValues.keys
+          .map((key) => '$key = @$key')
           .join(', ');
 
-      query = '''
-      INSERT INTO $tableName ($columns)
-      VALUES ($params)
-      ON CONFLICT ($idColumn) DO UPDATE SET $updateSet
-    ''';
-    } else {
-      query = '''
-      INSERT INTO $tableName ($columns)
-      VALUES ($params)
-    ''';
-    }
+      final query = '''
+      UPDATE $tableName
+      SET $updateSet
+      WHERE $idColumn = @id_$tableName
+       ''';
 
-    await _executeQuery(query: query, parameters: filteredValues, txn: txn);
+      updateValues['id_$tableName'] = idValue;
+
+    await _executeQuery(query: query, parameters: updateValues, txn: txn);
   }
   // Metodo para executar uma query SQL e retornar o resultado
   Future<Result> _executeQuery({
