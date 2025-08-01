@@ -1,0 +1,17 @@
+name: api_leads
+description: api de leads cervantes .
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  postgres: ^3.5.4
+  shelf_web_socket: ^3.0.0
+  web_socket_channel: ^3.0.2
+  vaden: ^0.1.1
+
+dev_dependencies:
+  build_runner: ^2.4.14
+  vaden_class_scanner: ^0.1.2
