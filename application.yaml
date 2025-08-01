@@ -5,28 +5,15 @@ openapi:
   enable: true
 
 postgres:
-  host: 0.0.0.0
-  database: postgres
-  port: 5432
-  username: username
-  password: password
+  host: localhost
+  database: banco-portal
+  port: 5433
+  username: postgres
+  password: senha
   ssl: disable
 server:
   port: 8080
-  host: localhost
-
-storage:
-  provider: local  # opções: local, s3, firebase
-  local:
-    folder: './uploads'
-  s3:
-    bucket: 'meu-bucket'
-    region: 'us-east-1'
-    accessKey: 'sua_access_key'
-    secretKey: 'seu_secret_key'
-  firebase:
-    projectId: 'my-project'
-    apiKey: 'my_api'
+  host: 0.0.0.0
 
 env:
   base_url: http://localhost
