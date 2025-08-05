@@ -1,3 +1,4 @@
+import 'package:api_leads/src/modules/leads/dto/filters.dart';
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/modules/leads/services/i_leads_service.dart';
@@ -15,7 +16,13 @@ import 'package:vaden/vaden.dart';
     return await _repository.update(entity);
   }
   @override
-  Future<List<LeadDto>> getAll(int page, int limit) async {
-    return await _repository.getAll(page, limit);
+  Future<List<LeadDto>> getAll(int offset, int limit) async {
+    return await _repository.getAll(offset, limit);
+  }
+
+
+  @override
+  Future<List<LeadDto>> getAllByFilter(LeadsFilters filters, int limit, int offset) async {
+    return await _repository.getAllByFilter(filters, limit, offset);
   }
 }

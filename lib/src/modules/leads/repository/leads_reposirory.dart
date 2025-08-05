@@ -1,3 +1,4 @@
+import 'package:api_leads/src/modules/leads/dto/filters.dart';
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/shared/database/database.dart';
@@ -19,8 +20,7 @@ class LeadsRepository implements ILeadsRepository {
   }
 
   @override
-  Future<List<LeadDto>> getAll( int page, int limit) async {
-    int offset = page * limit;
+  Future<List<LeadDto>> getAll( int offset, int limit) async {
     final result  = await _database.query(
     sql: ''' SELECT 
     id_${tableName},
@@ -32,13 +32,75 @@ class LeadsRepository implements ILeadsRepository {
     fonte,
     meio,
     anuncio,
-    status
+    status,
+    parceiro
 	  FROM $tableName ORDER BY id_${tableName} ASC  LIMIT @limit OFFSET @offset ; ''',
       parameters: {'limit': limit, 'offset': offset},
     )
     .then((rows) => rows.map((map) => fromMap(map)).toList());
     return result;
   }
+
+  //QUERY DINAMICA
+  @override
+  Future<List<LeadDto>> getAllByFilter (LeadsFilters filters, int offset, int limit) async {
+
+    final result = StringBuffer('''
+    SELECT 
+      id_${tableName},
+      data_hora,
+      nome,
+      email,
+      cnpj,
+      telefone,
+      interesse,
+      fonte,
+      meio,
+      anuncio,
+      status,
+      parceiro
+    FROM $tableName
+    WHERE 1=1
+  ''');
+    final parameters = <String, dynamic>{
+      'limit': limit,
+      'offset': offset,
+    };
+
+    if (filters.fonte != null && filters.fonte!.isNotEmpty) {
+      result.write(' AND fonte = @fonte');
+      parameters['fonte'] = filters.fonte;
+    }
+
+    if (filters.status != null && filters.status!.isNotEmpty) {
+      result.write(' AND status = @status');
+      parameters['status'] = filters.status;
+    }
+
+    if (filters.interesse != null && filters.interesse!.isNotEmpty) {
+      result.write(' AND interesse = @interesse');
+      parameters['interesse'] = filters.interesse;
+    }
+
+    if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
+      result.write(' AND parceiro = @parceiro');
+      parameters['parceiro'] = filters.parceiro;
+    }
+
+    result.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
+
+    final rows = await _database.query(
+      sql: result.toString(),
+      parameters: parameters,
+    );
+    print(' Filtro recebido: ${filters.fonte}');
+    print(' Params: $parameters');
+    print(' SQL gerado:\n${result.toString()}');
+
+    return rows.map(fromMap).toList();
+
+  }
+
 
   Map<String, dynamic> toMap(LeadDto entity) {
     return {
@@ -49,7 +111,7 @@ class LeadsRepository implements ILeadsRepository {
   }
   LeadDto fromMap(Map<String, dynamic> map) => LeadDto(
     id_leads_comercial: map['id_leads_comercial'],
-    nome: map['nome'].toString() ,
+    nome: map['nome'],
     email: map['email'],
     telefone: map['telefone'],
     cnpj: map['cnpj'],
@@ -59,6 +121,9 @@ class LeadsRepository implements ILeadsRepository {
     fonte: map['fonte'],
     interesse: InteresseEnum.fromName(map['interesse']),
     data_hora: map['data_hora'],
+    parceiro: map['parceiro'],
   );
+
+
 
 }

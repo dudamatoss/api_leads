@@ -3,7 +3,7 @@ import 'package:vaden/vaden.dart';
 
 @DTO()
 class LeadDto {
-  final int id_leads_comercial ;
+  final int id_leads_comercial;
   DateTime data_hora;
   final String? nome;
   final String? email;
@@ -14,6 +14,8 @@ class LeadDto {
   final String? meio;
   final String? anuncio;
   final StatusEnum status;
+  final String? parceiro;
+
 
   LeadDto({
     required this.id_leads_comercial,
@@ -27,6 +29,7 @@ class LeadDto {
     required this.meio,
     required this.anuncio,
     required this.status,
+    required this.parceiro,
   });
 }
 enum InteresseEnum {
