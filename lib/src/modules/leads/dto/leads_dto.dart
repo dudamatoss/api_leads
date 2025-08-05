@@ -1,20 +1,18 @@
-import 'package:api_leads/src/modules/leads/enum/interesse_enum.dart';
-import 'package:api_leads/src/modules/leads/enum/ststus_enum.dart';
 import 'package:vaden/vaden.dart';
 
 
 @DTO()
 class LeadDto {
-  final String id_leads_comercial ;
+  final int id_leads_comercial ;
   DateTime data_hora;
-  final String nome;
-  final String email;
-  final String cnpj;
-  final String telefone;
+  final String? nome;
+  final String? email;
+  final String? cnpj;
+  final String? telefone;
   final InteresseEnum interesse;
-  final String fonte;
-  final String meio;
-  final String anuncio;
+  final String? fonte;
+  final String? meio;
+  final String? anuncio;
   final StatusEnum status;
 
   LeadDto({
@@ -30,4 +28,27 @@ class LeadDto {
     required this.anuncio,
     required this.status,
   });
+}
+enum InteresseEnum {
+  utilizacao,
+  revenda ;
+
+  static InteresseEnum fromName(String value){
+    return InteresseEnum.values.firstWhere(
+          (e) => e.name == value,
+      orElse: () => InteresseEnum.utilizacao,
+    );
+  }
+}
+enum StatusEnum {
+  pendente,
+  concluido;
+
+  static StatusEnum fromName(String value){
+    return StatusEnum.values.firstWhere(
+          (e) => e.name == value,
+      orElse: () => StatusEnum.pendente,
+    );
+  }
+
 }

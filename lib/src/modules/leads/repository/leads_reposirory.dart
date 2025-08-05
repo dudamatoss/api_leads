@@ -1,6 +1,4 @@
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
-import 'package:api_leads/src/modules/leads/enum/interesse_enum.dart';
-import 'package:api_leads/src/modules/leads/enum/ststus_enum.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/shared/database/database.dart';
 import 'package:vaden/vaden.dart';
@@ -33,39 +31,33 @@ class LeadsRepository implements ILeadsRepository {
     interesse,
     fonte,
     meio,
-    anuncio
-	  FROM $tableName LIMIT @limit OFFSET @offset; ''',
+    anuncio,
+    status
+	  FROM $tableName ORDER BY id_${tableName} ASC  LIMIT @limit OFFSET @offset ; ''',
       parameters: {'limit': limit, 'offset': offset},
     )
     .then((rows) => rows.map((map) => fromMap(map)).toList());
-    print(result);
     return result;
   }
 
   Map<String, dynamic> toMap(LeadDto entity) {
     return {
       'id_lead': entity.id_leads_comercial,
-      'interesse': entity.interesse,
-      'status': entity.status,
+      'interesse': entity.interesse.name,
+      'status': entity.status.name,
     };
   }
   LeadDto fromMap(Map<String, dynamic> map) => LeadDto(
     id_leads_comercial: map['id_leads_comercial'],
-    nome: map['nome'],
+    nome: map['nome'].toString() ,
     email: map['email'],
     telefone: map['telefone'],
     cnpj: map['cnpj'],
     anuncio: map['anuncio'],
     meio: map['meio'],
-    status: StatusEnum.values.firstWhere(
-          (e) => e.name == map['status'],
-      orElse: () => StatusEnum.pendente,
-    ),
+    status: StatusEnum.fromName(map['status']),
     fonte: map['fonte'],
-    interesse: InteresseEnum.values.firstWhere(
-          (e) => e.name == map['interesse'],
-      orElse: () => InteresseEnum.utilizacao,
-    ),
+    interesse: InteresseEnum.fromName(map['interesse']),
     data_hora: map['data_hora'],
   );
 

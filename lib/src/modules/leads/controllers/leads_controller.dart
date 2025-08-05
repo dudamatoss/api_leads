@@ -33,12 +33,12 @@ class LeadsController {
   @ApiResponse(500, description: 'Erro interno do servidor', content: ApiContent(type: 'application/json'))
   @ApiSecurity(['apiKey'])
   @Get()
-  Future<Response> getAll(@Query('page') int page, @Query('limit') int limit) async {
+  Future<List<LeadDto>> getAll(@Query('page') int page, @Query('limit') int limit) async {
     final pageNum  = page ?? 1;
     final leadForPage = limit ?? 15;
     // A pag 1 começa no item 0, entao subtrai 1 para calcular o inicio correto
     final offset = (pageNum - 1) * leadForPage;
-    return Response.ok(await _leadsService.getAll(page, limit));
+    return await _leadsService.getAll(offset, leadForPage);
   }
 
 }
