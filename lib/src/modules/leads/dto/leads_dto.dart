@@ -36,20 +36,21 @@ enum InteresseEnum {
   utilizacao,
   revenda;
 
-  static InteresseEnum fromName(String value){
+  static InteresseEnum fromName(String value) {
     return InteresseEnum.values.firstWhere(
-          (e) => e.name == value,
+          (e) => e.name.toLowerCase() == value.toLowerCase(),
       orElse: () => InteresseEnum.utilizacao,
     );
   }
- String formatToDb(){
-    switch(this) {
+
+  String toName() {
+    switch (this) {
       case InteresseEnum.utilizacao:
         return 'Utilização';
       case InteresseEnum.revenda:
         return 'Revenda';
     }
- }
+  }
 }
 enum StatusEnum {
   ativo,

@@ -70,18 +70,23 @@ class LeadsRepository implements ILeadsRepository {
     if (filters.fonte != null && filters.fonte!.isNotEmpty) {
       result.write(' AND fonte = @fonte');
       parameters['fonte'] = filters.fonte;
+
+      print("📥 Fonte recebida: ${filters.fonte}");
     }
 
     if (filters.status != null && filters.status!.isNotEmpty) {
       result.write(' AND status = @status');
       parameters['status'] = filters.status;
     }
+    print("📥 Status recebido: ${filters.status}");
 
     if (filters.interesse != null && filters.interesse!.isNotEmpty) {
+      final interesseEnum = InteresseEnum.values.firstWhere(
+            (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
+        orElse: () => InteresseEnum.utilizacao,
+      );
       result.write(' AND interesse = @interesse');
-      parameters['interesse'] = InteresseEnum.values
-          .firstWhere((e) => e.name == filters.interesse)
-          .formatToDb();
+      parameters['interesse'] = interesseEnum.toName();
     }
     print("📥 Interesse recebido: ${filters.interesse}");
 
@@ -96,10 +101,6 @@ class LeadsRepository implements ILeadsRepository {
       sql: result.toString(),
       parameters: parameters,
     );
-    // print(' Filtro recebido: ${filters.fonte}');
-    // print(' Params: $parameters');
-    // print(' SQL gerado:\n${result.toString()}');
-
     return rows.map(fromMap).toList();
 
   }
@@ -108,7 +109,7 @@ class LeadsRepository implements ILeadsRepository {
   Map<String, dynamic> toMap(LeadDto entity) {
     return {
       'id_lead': entity.id_leads_comercial,
-      'interesse': entity.interesse.formatToDb(),
+      'interesse': entity.interesse.toName(),
       'status': entity.status.name,
       'parceiro': entity.parceiro,
     };
@@ -123,7 +124,7 @@ class LeadsRepository implements ILeadsRepository {
     meio: map['meio'],
     status: StatusEnum.fromName(map['status']),
     fonte: map['fonte'],
-    interesse: InteresseEnum.fromName(map['interesse']),
+    interesse: InteresseEnum.fromName(map['interesse'] ?? ''),
     data_hora: map['data_hora'],
     parceiro: map['parceiro'],
   );
