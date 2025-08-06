@@ -79,8 +79,11 @@ class LeadsRepository implements ILeadsRepository {
 
     if (filters.interesse != null && filters.interesse!.isNotEmpty) {
       result.write(' AND interesse = @interesse');
-      parameters['interesse'] = filters.interesse;
+      parameters['interesse'] = InteresseEnum.values
+          .firstWhere((e) => e.name == filters.interesse)
+          .formatToDb();
     }
+    print("📥 Interesse recebido: ${filters.interesse}");
 
     if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
       result.write(' AND parceiro = @parceiro');
@@ -93,9 +96,9 @@ class LeadsRepository implements ILeadsRepository {
       sql: result.toString(),
       parameters: parameters,
     );
-    print(' Filtro recebido: ${filters.fonte}');
-    print(' Params: $parameters');
-    print(' SQL gerado:\n${result.toString()}');
+    // print(' Filtro recebido: ${filters.fonte}');
+    // print(' Params: $parameters');
+    // print(' SQL gerado:\n${result.toString()}');
 
     return rows.map(fromMap).toList();
 
@@ -105,7 +108,7 @@ class LeadsRepository implements ILeadsRepository {
   Map<String, dynamic> toMap(LeadDto entity) {
     return {
       'id_lead': entity.id_leads_comercial,
-      'interesse': entity.interesse.name,
+      'interesse': entity.interesse.formatToDb(),
       'status': entity.status.name,
       'parceiro': entity.parceiro,
     };

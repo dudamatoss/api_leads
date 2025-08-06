@@ -34,7 +34,7 @@ class LeadDto {
 }
 enum InteresseEnum {
   utilizacao,
-  revenda ;
+  revenda;
 
   static InteresseEnum fromName(String value){
     return InteresseEnum.values.firstWhere(
@@ -42,6 +42,14 @@ enum InteresseEnum {
       orElse: () => InteresseEnum.utilizacao,
     );
   }
+ String formatToDb(){
+    switch(this) {
+      case InteresseEnum.utilizacao:
+        return 'Utilização';
+      case InteresseEnum.revenda:
+        return 'Revenda';
+    }
+ }
 }
 enum StatusEnum {
   ativo,
