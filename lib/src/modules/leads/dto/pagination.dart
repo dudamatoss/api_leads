@@ -10,7 +10,7 @@ class Pagination {
 
   factory Pagination.fromQuery(int? page, int? limit) {
     final numPage = page ?? 1;
-    final limitForPage = limit ?? 10 ;
+    final limitForPage = limit ?? 8 ;
     return Pagination(numPage, limitForPage);
   }
 }

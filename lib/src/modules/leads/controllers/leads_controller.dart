@@ -35,7 +35,7 @@ class LeadsController {
   @ApiResponse(500, description: 'Erro interno do servidor', content: ApiContent(type: 'application/json'))
   @ApiSecurity(['apiKey'])
   @Get()
-  Future<List<LeadDto>> getAll(@Query('page') int page, @Query('limit') int limit) async {
+  Future<List<LeadDto>> getAll(@Query('page') int? page, @Query('limit') int? limit) async {
     final pagination = Pagination.fromQuery(page, limit);
     return _leadsService.getAll(pagination.offset, pagination.limit);
   }

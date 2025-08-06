@@ -44,13 +44,13 @@ enum InteresseEnum {
   }
 }
 enum StatusEnum {
-  pendente,
+  ativo,
   concluido;
 
   static StatusEnum fromName(String value){
     return StatusEnum.values.firstWhere(
           (e) => e.name == value,
-      orElse: () => StatusEnum.pendente,
+      orElse: () => StatusEnum.ativo,
     );
   }
 

@@ -107,6 +107,7 @@ class LeadsRepository implements ILeadsRepository {
       'id_lead': entity.id_leads_comercial,
       'interesse': entity.interesse.name,
       'status': entity.status.name,
+      'parceiro': entity.parceiro,
     };
   }
   LeadDto fromMap(Map<String, dynamic> map) => LeadDto(
