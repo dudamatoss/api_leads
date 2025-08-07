@@ -24,7 +24,8 @@ class LeadsRepository implements ILeadsRepository {
     final result  = await _database.query(
     sql: ''' SELECT 
     id_${tableName},
-    data_hora, nome,
+    data_hora, 
+    nome,
     email,
     cnpj,
     telefone,
@@ -107,13 +108,27 @@ class LeadsRepository implements ILeadsRepository {
 
 
   Map<String, dynamic> toMap(LeadDto entity) {
-    return {
-      'id_lead': entity.id_leads_comercial,
-      'interesse': entity.interesse.toName(),
-      'status': entity.status.name,
-      'parceiro': entity.parceiro,
-    };
+    final map = <String, dynamic>{};
+
+    if (entity.id_leads_comercial != null) {
+      map['id_leads_comercial'] = entity.id_leads_comercial;
+    }
+
+    if (entity.interesse != null) {
+      map['interesse'] = entity.interesse!.toName();
+    }
+
+    if (entity.status != null) {
+      map['status'] = entity.status!.name;
+    }
+
+    if (entity.parceiro != null) {
+      map['parceiro'] = entity.parceiro;
+    }
+
+    return map;
   }
+
   LeadDto fromMap(Map<String, dynamic> map) => LeadDto(
     id_leads_comercial: map['id_leads_comercial'],
     nome: map['nome'],

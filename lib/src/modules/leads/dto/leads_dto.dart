@@ -4,16 +4,16 @@ import 'package:vaden/vaden.dart';
 @DTO()
 class LeadDto {
   final int id_leads_comercial;
-  DateTime data_hora;
+  DateTime? data_hora;
   final String? nome;
   final String? email;
   final String? cnpj;
   final String? telefone;
-  final InteresseEnum interesse;
+  final InteresseEnum? interesse;
   final String? fonte;
   final String? meio;
   final String? anuncio;
-  final StatusEnum status;
+  final StatusEnum? status;
   final String? parceiro;
 
 

@@ -29,7 +29,6 @@ import 'package:vaden/vaden.dart';
       SET $updateSet
       WHERE $idColumn = @id_$tableName
        ''';
-
       updateValues['id_$tableName'] = idValue;
 
     await _executeQuery(query: query, parameters: updateValues, txn: txn);
