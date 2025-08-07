@@ -1,5 +1,6 @@
 import 'package:api_leads/src/modules/leads/dto/filters.dart';
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
+import 'package:api_leads/src/modules/leads/dto/leads_total_dto.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/shared/database/database.dart';
 import 'package:vaden/vaden.dart';
@@ -42,6 +43,22 @@ class LeadsRepository implements ILeadsRepository {
     return result;
   }
 
+  @override
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {
+    final result = await _database.query(
+        sql: '''
+      SELECT
+        COUNT(*) FILTER (WHERE status = 'ativo') AS total_ativos,
+        COUNT(*) FILTER (WHERE interesse = 'Revenda') AS total_revenda,
+        COUNT(*) FILTER (WHERE interesse = 'Utilização') AS total_utilizacao
+      FROM leads_comercial;
+    '''
+    );
+
+    final map = result.first;
+    return LeadTotaisDto.fromMap(map);
+  }
+
   //QUERY DINAMICA
   @override
   Future<List<LeadDto>> getAllByFilter (LeadsFilters filters, int offset, int limit) async {
@@ -72,14 +89,14 @@ class LeadsRepository implements ILeadsRepository {
       result.write(' AND fonte = @fonte');
       parameters['fonte'] = filters.fonte;
 
-      print("📥 Fonte recebida: ${filters.fonte}");
     }
+    print(" Fonte recebida: ${filters.fonte}");
 
     if (filters.status != null && filters.status!.isNotEmpty) {
       result.write(' AND status = @status');
       parameters['status'] = filters.status;
     }
-    print("📥 Status recebido: ${filters.status}");
+    print(" Status recebido: ${filters.status}");
 
     if (filters.interesse != null && filters.interesse!.isNotEmpty) {
       final interesseEnum = InteresseEnum.values.firstWhere(
@@ -89,12 +106,13 @@ class LeadsRepository implements ILeadsRepository {
       result.write(' AND interesse = @interesse');
       parameters['interesse'] = interesseEnum.toName();
     }
-    print("📥 Interesse recebido: ${filters.interesse}");
+    print(" Interesse recebido: ${filters.interesse}");
 
     if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
       result.write(' AND parceiro = @parceiro');
       parameters['parceiro'] = filters.parceiro;
     }
+    print(" Parceiro recebido: ${filters.parceiro}");
 
     result.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
 

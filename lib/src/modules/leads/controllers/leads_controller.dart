@@ -1,5 +1,6 @@
 import 'package:api_leads/src/modules/leads/dto/filters.dart';
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
+import 'package:api_leads/src/modules/leads/dto/leads_total_dto.dart';
 import 'package:api_leads/src/modules/leads/dto/pagination.dart';
 import 'package:api_leads/src/modules/leads/services/i_leads_service.dart';
 import 'package:vaden/vaden.dart';
@@ -61,5 +62,26 @@ class LeadsController {
       parceiro: parceiro,
     );
     return _leadsService.getAllByFilter(filters, pagination.offset, pagination.limit);
+  }
+
+  @ApiOperation(
+      summary: 'Busca totais de leads',
+      description: 'Busca totais de leads filtrando por interesse e status.'
+  )
+  @ApiResponse(200, description: 'Totais de leads encontrados com sucesso', content: ApiContent(type: 'application/json', schema: LeadTotaisDto))
+  @ApiResponse(400, description: 'Requisição inválida', content: ApiContent(type: 'application/json'))
+  @ApiResponse(401, description: 'Não autorizado', content: ApiContent(type: 'application/json'))
+  @ApiResponse(500, description: 'Erro interno do servidor', content: ApiContent(type: 'application/json'))
+  @ApiSecurity(['apiKey'])
+  @Get('/totais')
+  Future<LeadTotaisDto> getAllTotal(@Query('fonte') String? fonte, @Query('parceiro') String? parceiro,
+      @Query('interesse') String? interesse, @Query('status') String? status) async {
+    final filters = LeadsFilters(
+      fonte: fonte,
+      status: status,
+      interesse: interesse,
+      parceiro: parceiro,
+    );
+    return _leadsService.getAllTotal(filters);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:api_leads/src/modules/leads/dto/filters.dart';
 import 'package:api_leads/src/modules/leads/dto/leads_dto.dart';
+import 'package:api_leads/src/modules/leads/dto/leads_total_dto.dart';
 import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/modules/leads/services/i_leads_service.dart';
 import 'package:vaden/vaden.dart';
@@ -20,6 +21,10 @@ import 'package:vaden/vaden.dart';
     return await _repository.getAll(offset, limit);
   }
 
+  @override
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {
+    return await _repository.getAllTotal(filters);
+  }
 
   @override
   Future<List<LeadDto>> getAllByFilter(LeadsFilters filters, int limit, int offset) async {
