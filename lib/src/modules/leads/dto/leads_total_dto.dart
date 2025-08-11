@@ -3,21 +3,24 @@ import 'package:vaden/vaden.dart';
 
 @DTO()
 class LeadTotaisDto {
-  final int totalAtivos;
+  final int totalStatus;
   final int totalRevenda;
   final int totalUtilizacao;
+  final int totalGeral;
 
   LeadTotaisDto({
-    required this.totalAtivos,
+    required this.totalStatus,
     required this.totalRevenda,
     required this.totalUtilizacao,
+    required this.totalGeral,
   });
 
   factory LeadTotaisDto.fromMap(Map<String, dynamic> map) {
     return LeadTotaisDto(
-      totalAtivos: map['total_ativos'] ?? 0,
+      totalStatus: map['total_status'] ?? 0,
       totalRevenda: map['total_revenda'] ?? 0,
       totalUtilizacao: map['total_utilizacao'] ?? 0,
+      totalGeral: map['total_geral'] ?? 0,
     );
   }
 }

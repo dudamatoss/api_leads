@@ -6,8 +6,6 @@ abstract class ILeadsService {
 
   Future<LeadDto> update(LeadDto lead);
 
-  Future<List<LeadDto>> getAll(int offset, int limit);
-
   Future<LeadTotaisDto> getAllTotal(LeadsFilters filters);
 
   Future<List<LeadDto>> getAllByFilter(LeadsFilters filters, int limit, int offset);

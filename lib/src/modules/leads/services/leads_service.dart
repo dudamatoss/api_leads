@@ -16,10 +16,6 @@ import 'package:vaden/vaden.dart';
   Future<LeadDto> update(LeadDto entity) async {
     return await _repository.update(entity);
   }
-  @override
-  Future<List<LeadDto>> getAll(int offset, int limit) async {
-    return await _repository.getAll(offset, limit);
-  }
 
   @override
   Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {

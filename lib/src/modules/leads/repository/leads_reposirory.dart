@@ -20,49 +20,59 @@ class LeadsRepository implements ILeadsRepository {
     return entity;
   }
 
-  @override
-  Future<List<LeadDto>> getAll( int offset, int limit) async {
-    final result  = await _database.query(
-    sql: ''' SELECT 
-    id_${tableName},
-    data_hora, 
-    nome,
-    email,
-    cnpj,
-    telefone,
-    interesse,
-    fonte,
-    meio,
-    anuncio,
-    status,
-    parceiro
-	  FROM $tableName ORDER BY id_${tableName} ASC  LIMIT @limit OFFSET @offset ; ''',
-      parameters: {'limit': limit, 'offset': offset},
-    )
-    .then((rows) => rows.map((map) => fromMap(map)).toList());
-    return result;
-  }
-
-  @override
+ @override
   Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {
-    final result = await _database.query(
-        sql: '''
+    final parameters = <String, dynamic>{};
+
+    final sql = StringBuffer('''
       SELECT
-        COUNT(*) FILTER (WHERE status = 'ativo') AS total_ativos,
+        COUNT(*) FILTER (WHERE status = @status) AS total_status,
         COUNT(*) FILTER (WHERE interesse = 'Revenda') AS total_revenda,
-        COUNT(*) FILTER (WHERE interesse = 'Utilização') AS total_utilizacao
-      FROM leads_comercial;
-    '''
+        COUNT(*) FILTER (WHERE interesse = 'Utilização') AS total_utilizacao,
+        COUNT(*) AS total_geral
+      FROM leads_comercial
+      WHERE 1=1
+    ''');
+
+    if (filters.fonte != null && filters.fonte!.isNotEmpty) {
+      sql.write(' AND fonte = @fonte');
+      parameters['fonte'] = filters.fonte;
+    }
+    if (filters.status != null && filters.status!.isNotEmpty) {
+      sql.write(' AND status = @status');
+      parameters['status'] = filters.status;
+    }
+    if (filters.interesse != null && filters.interesse!.isNotEmpty) {
+      final interesseEnum = InteresseEnum.values.firstWhere(
+            (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
+        orElse: () => InteresseEnum.utilizacao,
+      );
+      sql.write(' AND interesse = @interesse');
+      parameters['interesse'] = interesseEnum.toName();
+    }
+    if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
+      sql.write(' AND parceiro = @parceiro');
+      parameters['parceiro'] = filters.parceiro;
+    }
+    sql.write(';');
+
+    final result = await _database.query(
+      sql: sql.toString(),
+      parameters: parameters,
     );
 
+    print(result);
     final map = result.first;
     return LeadTotaisDto.fromMap(map);
   }
 
   //QUERY DINAMICA
   @override
-  Future<List<LeadDto>> getAllByFilter (LeadsFilters filters, int offset, int limit) async {
-
+  Future<List<LeadDto>> getAllByFilter(
+    LeadsFilters filters,
+    int offset,
+    int limit,
+  ) async {
     final result = StringBuffer('''
     SELECT 
       id_${tableName},
@@ -79,16 +89,13 @@ class LeadsRepository implements ILeadsRepository {
       parceiro
     FROM $tableName
     WHERE 1=1
+    
   ''');
-    final parameters = <String, dynamic>{
-      'limit': limit,
-      'offset': offset,
-    };
+    final parameters = <String, dynamic>{'limit': limit, 'offset': offset};
 
     if (filters.fonte != null && filters.fonte!.isNotEmpty) {
       result.write(' AND fonte = @fonte');
       parameters['fonte'] = filters.fonte;
-
     }
     print(" Fonte recebida: ${filters.fonte}");
 
@@ -100,7 +107,7 @@ class LeadsRepository implements ILeadsRepository {
 
     if (filters.interesse != null && filters.interesse!.isNotEmpty) {
       final interesseEnum = InteresseEnum.values.firstWhere(
-            (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
+        (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
         orElse: () => InteresseEnum.utilizacao,
       );
       result.write(' AND interesse = @interesse');
@@ -121,9 +128,7 @@ class LeadsRepository implements ILeadsRepository {
       parameters: parameters,
     );
     return rows.map(fromMap).toList();
-
   }
-
 
   Map<String, dynamic> toMap(LeadDto entity) {
     final map = <String, dynamic>{};
@@ -161,7 +166,4 @@ class LeadsRepository implements ILeadsRepository {
     data_hora: map['data_hora'],
     parceiro: map['parceiro'],
   );
-
-
-
 }

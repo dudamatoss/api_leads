@@ -26,20 +26,6 @@ class LeadsController {
     return await _leadsService.update(lead);
   }
 
-  @ApiOperation(
-      summary: 'Busca todos os leads',
-      description: 'Busca todos os leads com paginação.'
-  )
-  @ApiResponse(200, description: 'Leads encontrados com sucesso', content: ApiContent(type: 'application/json', schema: List<LeadDto>))
-  @ApiResponse(400, description: 'Requisição inválida', content: ApiContent(type: 'application/json'))
-  @ApiResponse(401, description: 'Não autorizado', content: ApiContent(type: 'application/json'))
-  @ApiResponse(500, description: 'Erro interno do servidor', content: ApiContent(type: 'application/json'))
-  @ApiSecurity(['apiKey'])
-  @Get()
-  Future<List<LeadDto>> getAll(@Query('page') int? page, @Query('limit') int? limit) async {
-    final pagination = Pagination.fromQuery(page, limit);
-    return _leadsService.getAll(pagination.offset, pagination.limit);
-  }
 
   //filtros
   @ApiOperation(
