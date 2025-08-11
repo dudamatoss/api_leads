@@ -39,13 +39,14 @@ class LeadsController {
   @ApiSecurity(['apiKey'])
   @Get('/filtro')
   Future<List<LeadDto>> getAllByFilter(@Query('page') int? page, @Query('limit') int? limit,@Query('fonte') String? fonte,
-  @Query('parceiro') String? parceiro, @Query('interesse')String? interesse, @Query('status') String? status) async {
+  @Query('parceiro') String? parceiro, @Query('interesse')String? interesse, @Query('status') String? status, @Query('busca') String? busca) async {
     final pagination = Pagination.fromQuery(page, limit);
     final filters = LeadsFilters(
       fonte: fonte,
       status: status,
       interesse: interesse,
       parceiro: parceiro,
+      busca: busca
     );
     return _leadsService.getAllByFilter(filters, pagination.offset, pagination.limit);
   }
@@ -61,13 +62,14 @@ class LeadsController {
   @ApiSecurity(['apiKey'])
   @Get('/totais')
   Future<LeadTotaisDto> getAllTotal(@Query('fonte') String? fonte, @Query('parceiro') String? parceiro,
-      @Query('interesse') String? interesse, @Query('status') String? status, @Query('limit') int? limit) async {
+      @Query('interesse') String? interesse, @Query('status') String? status, @Query('limit') int? limit, @Query('busca') String? busca) async {
     final pagination = Pagination.fromQuery(null, limit);
     final filters = LeadsFilters(
       fonte: fonte,
       status: status,
       interesse: interesse,
       parceiro: parceiro,
+      busca: busca
     );
     return _leadsService.getAllTotal(filters, pagination.limit);
   }

@@ -121,6 +121,13 @@ class LeadsRepository implements ILeadsRepository {
     }
     print(" Parceiro recebido: ${filters.parceiro}");
 
+    final whereClauses = <String>[];
+    _applyFullTextSearch(filters.busca, whereClauses, parameters);
+    if (whereClauses.isNotEmpty) {
+      result.write(' AND ${whereClauses.join(' AND ')}');
+    }
+    print(" Busca recebida: ${filters.busca}");
+
     result.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
 
     final rows = await _database.query(
@@ -129,6 +136,44 @@ class LeadsRepository implements ILeadsRepository {
     );
     return rows.map(fromMap).toList();
   }
+
+
+
+
+
+  void _applyFullTextSearch(
+      String? busca,
+      List<String> clauses,
+      Map<String, dynamic> parameters,
+      ) {
+    if (busca == null || busca.trim().isEmpty) return;
+
+    final campos = [
+      'nome',
+      'email',
+      'cnpj',
+      'telefone',
+      'origem',
+      'fonte',
+      'meio',
+      'anuncio',
+      'interesse',
+      'status',
+      'parceiro'
+    ];
+
+    final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
+    clauses.add("($likes)");
+
+    parameters['busca'] = '%${busca.trim()}%';
+  }
+
+
+
+
+
+
+
 
   Map<String, dynamic> toMap(LeadDto entity) {
     final map = <String, dynamic>{};
