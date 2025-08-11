@@ -21,12 +21,12 @@ class LeadsRepository implements ILeadsRepository {
   }
 
  @override
-  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters, int limit) async {
     final parameters = <String, dynamic>{};
 
     final sql = StringBuffer('''
       SELECT
-        COUNT(*) FILTER (WHERE status = @status) AS total_status,
+        COUNT(*) AS total_status,
         COUNT(*) FILTER (WHERE interesse = 'Revenda') AS total_revenda,
         COUNT(*) FILTER (WHERE interesse = 'Utilização') AS total_utilizacao,
         COUNT(*) AS total_geral
@@ -61,9 +61,9 @@ class LeadsRepository implements ILeadsRepository {
       parameters: parameters,
     );
 
-    print(result);
+
     final map = result.first;
-    return LeadTotaisDto.fromMap(map);
+    return LeadTotaisDto.fromMap(map, limit);
   }
 
   //QUERY DINAMICA

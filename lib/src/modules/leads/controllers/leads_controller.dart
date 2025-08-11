@@ -61,13 +61,14 @@ class LeadsController {
   @ApiSecurity(['apiKey'])
   @Get('/totais')
   Future<LeadTotaisDto> getAllTotal(@Query('fonte') String? fonte, @Query('parceiro') String? parceiro,
-      @Query('interesse') String? interesse, @Query('status') String? status) async {
+      @Query('interesse') String? interesse, @Query('status') String? status, @Query('limit') int? limit) async {
+    final pagination = Pagination.fromQuery(null, limit);
     final filters = LeadsFilters(
       fonte: fonte,
       status: status,
       interesse: interesse,
       parceiro: parceiro,
     );
-    return _leadsService.getAllTotal(filters);
+    return _leadsService.getAllTotal(filters, pagination.limit);
   }
 }

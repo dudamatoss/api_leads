@@ -6,7 +6,7 @@ abstract class ILeadsRepository {
 
   Future<LeadDto> update(LeadDto entity);
 
-  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters);
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters, int limit);
 
   Future<List<LeadDto>> getAllByFilter(LeadsFilters filters, int limit, int offset);
 }

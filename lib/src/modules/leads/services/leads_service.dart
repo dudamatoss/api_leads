@@ -18,8 +18,8 @@ import 'package:vaden/vaden.dart';
   }
 
   @override
-  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters) async {
-    return await _repository.getAllTotal(filters);
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters, int limit) async {
+    return await _repository.getAllTotal(filters, limit);
   }
 
   @override
