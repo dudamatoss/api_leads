@@ -49,6 +49,7 @@ class LeadsController {
     return _leadsService.getAllByFilter(filters, pagination.limit, pagination.offset);
   }
 
+  //totais de leads para contagem de paginas
   @ApiOperation(
       summary: 'Busca totais de leads',
       description: 'Busca totais de leads filtrando por interesse e status.'

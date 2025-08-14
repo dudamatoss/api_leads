@@ -165,7 +165,6 @@ class LeadsRepository implements ILeadsRepository {
     if (entity.parceiro != null) {
       map['parceiro'] = entity.parceiro;
     }
-
     return map;
   }
 

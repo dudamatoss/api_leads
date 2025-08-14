@@ -17,7 +17,6 @@ class LeadTotaisDto {
     required this.totalPaginas,
   });
 
-
   factory LeadTotaisDto.fromMap(Map<String, dynamic> map, int limit) {
     final totalGeral = map['total_geral'] ?? 0;
     final totalPaginas = limit > 0 ? (totalGeral / limit).ceil() : 0;

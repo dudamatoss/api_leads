@@ -16,7 +16,6 @@ class LeadDto {
   final StatusEnum? status;
   final String? parceiro;
 
-
   LeadDto({
     required this.id_leads_comercial,
     required this.data_hora,
@@ -32,6 +31,7 @@ class LeadDto {
     required this.parceiro,
   });
 }
+
 enum InteresseEnum {
   utilizacao,
   revenda;
@@ -52,6 +52,7 @@ enum InteresseEnum {
     }
   }
 }
+
 enum StatusEnum {
   ativo,
   concluido;
