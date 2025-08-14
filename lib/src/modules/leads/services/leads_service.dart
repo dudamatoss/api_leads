@@ -5,25 +5,24 @@ import 'package:api_leads/src/modules/leads/repository/i_leads_repository.dart';
 import 'package:api_leads/src/modules/leads/services/i_leads_service.dart';
 import 'package:vaden/vaden.dart';
 
+
 @Scope(BindType.instance)
 @Service()
- class LeadsService implements ILeadsService {
+class LeadsService implements ILeadsService {
   final ILeadsRepository _repository;
 
   LeadsService(this._repository);
 
   @override
-  Future<LeadDto> update(LeadDto entity) async {
-    return await _repository.update(entity);
-  }
+  Future<LeadDto> update(LeadDto entity) => _repository.update(entity);
 
   @override
-  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters, int limit) async {
-    return await _repository.getAllTotal(filters, limit);
-  }
+  Future<LeadTotaisDto> getAllTotal(LeadsFilters filters, int limit) => _repository.getAllTotal(filters, limit);
 
   @override
-  Future<List<LeadDto>> getAllByFilter(LeadsFilters filters, int limit, int offset) async {
-    return await _repository.getAllByFilter(filters, limit, offset);
-  }
+  Future<List<LeadDto>> getAllByFilter(
+      LeadsFilters filters,
+      int limit,
+      int offset,
+      ) => _repository.getAllByFilter(filters, limit, offset);
 }

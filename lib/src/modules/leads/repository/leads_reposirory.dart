@@ -10,7 +10,7 @@ import 'package:vaden/vaden.dart';
 class LeadsRepository implements ILeadsRepository {
   final Database _database;
 
-  String get tableName => 'leads_comercial';
+  static const String tableName = 'leads_comercial';
 
   LeadsRepository(this._database);
 
@@ -30,51 +30,29 @@ class LeadsRepository implements ILeadsRepository {
         COUNT(*) FILTER (WHERE interesse = 'Revenda') AS total_revenda,
         COUNT(*) FILTER (WHERE interesse = 'Utilização') AS total_utilizacao,
         COUNT(*) AS total_geral
-      FROM leads_comercial
+      FROM $tableName
       WHERE 1=1
     ''');
+    _applyFilters(filters, sql, parameters);
 
-    if (filters.fonte != null && filters.fonte!.isNotEmpty) {
-      sql.write(' AND fonte = @fonte');
-      parameters['fonte'] = filters.fonte;
-    }
-    if (filters.status != null && filters.status!.isNotEmpty) {
-      sql.write(' AND status = @status');
-      parameters['status'] = filters.status;
-    }
-    if (filters.interesse != null && filters.interesse!.isNotEmpty) {
-      final interesseEnum = InteresseEnum.values.firstWhere(
-            (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
-        orElse: () => InteresseEnum.utilizacao,
-      );
-      sql.write(' AND interesse = @interesse');
-      parameters['interesse'] = interesseEnum.toName();
-    }
-    if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
-      sql.write(' AND parceiro = @parceiro');
-      parameters['parceiro'] = filters.parceiro;
-    }
     sql.write(';');
 
     final result = await _database.query(
       sql: sql.toString(),
       parameters: parameters,
     );
-
-
-    final map = result.first;
-    return LeadTotaisDto.fromMap(map, limit);
+    return LeadTotaisDto.fromMap(result.first, limit);
   }
 
   //QUERY DINAMICA
   @override
   Future<List<LeadDto>> getAllByFilter(
     LeadsFilters filters,
-    int offset,
     int limit,
+    int offset,
   ) async {
-    final result = StringBuffer('''
-    SELECT 
+    final sql = StringBuffer('''
+    SELECT
       id_${tableName},
       data_hora,
       nome,
@@ -89,57 +67,58 @@ class LeadsRepository implements ILeadsRepository {
       parceiro
     FROM $tableName
     WHERE 1=1
-    
+     
   ''');
     final parameters = <String, dynamic>{'limit': limit, 'offset': offset};
 
+    _applyFilters(filters, sql, parameters);
+
+    final whereClauses = <String>[];
+    _applyFullTextSearch(filters.busca, whereClauses, parameters);
+    if (whereClauses.isNotEmpty) {
+      sql.write(' AND ${whereClauses.join(' AND ')}');
+    }
+
+    sql.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
+
+    final rows = await _database.query(
+      sql: sql.toString(),
+      parameters: parameters,
+    );
+    return rows.map(fromMap).toList();
+  }
+
+  void _applyFilters(
+      LeadsFilters filters,
+      StringBuffer sql,
+      Map<String, dynamic> parameters,
+      ) {
+
     if (filters.fonte != null && filters.fonte!.isNotEmpty) {
-      result.write(' AND fonte = @fonte');
+      sql.write(' AND fonte = @fonte');
       parameters['fonte'] = filters.fonte;
     }
-    print(" Fonte recebida: ${filters.fonte}");
 
     if (filters.status != null && filters.status!.isNotEmpty) {
-      result.write(' AND status = @status');
+      sql.write(' AND status = @status');
       parameters['status'] = filters.status;
     }
-    print(" Status recebido: ${filters.status}");
+
 
     if (filters.interesse != null && filters.interesse!.isNotEmpty) {
       final interesseEnum = InteresseEnum.values.firstWhere(
         (e) => e.name.toLowerCase() == filters.interesse!.toLowerCase(),
         orElse: () => InteresseEnum.utilizacao,
       );
-      result.write(' AND interesse = @interesse');
+      sql.write(' AND interesse = @interesse');
       parameters['interesse'] = interesseEnum.toName();
     }
-    print(" Interesse recebido: ${filters.interesse}");
 
     if (filters.parceiro != null && filters.parceiro!.isNotEmpty) {
-      result.write(' AND parceiro = @parceiro');
+      sql.write(' AND parceiro = @parceiro');
       parameters['parceiro'] = filters.parceiro;
     }
-    print(" Parceiro recebido: ${filters.parceiro}");
-
-    final whereClauses = <String>[];
-    _applyFullTextSearch(filters.busca, whereClauses, parameters);
-    if (whereClauses.isNotEmpty) {
-      result.write(' AND ${whereClauses.join(' AND ')}');
-    }
-    print(" Busca recebida: ${filters.busca}");
-
-    result.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
-
-    final rows = await _database.query(
-      sql: result.toString(),
-      parameters: parameters,
-    );
-    return rows.map(fromMap).toList();
   }
-
-
-
-
 
   void _applyFullTextSearch(
       String? busca,
@@ -163,17 +142,10 @@ class LeadsRepository implements ILeadsRepository {
     ];
 
     final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
-    clauses.add("($likes)");
+    clauses.add('($likes)');
 
     parameters['busca'] = '%${busca.trim()}%';
   }
-
-
-
-
-
-
-
 
   Map<String, dynamic> toMap(LeadDto entity) {
     final map = <String, dynamic>{};
