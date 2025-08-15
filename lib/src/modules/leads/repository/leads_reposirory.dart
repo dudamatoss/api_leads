@@ -127,7 +127,10 @@ class LeadsRepository implements ILeadsRepository {
       ) {
     if (busca == null || busca.trim().isEmpty) return;
 
+    final buscaLimpa = busca.replaceAll(RegExp(r'[-./]'), '');
+
     final campos = [
+      'data_hora :: text',
       'nome',
       'email',
       'cnpj',
@@ -141,10 +144,10 @@ class LeadsRepository implements ILeadsRepository {
       'parceiro'
     ];
 
-    final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
+    final likes = campos.map((c) => "REGEXP_REPLACE($c, '[-./]', '', 'g') ILIKE @busca").join(' OR ');
     clauses.add('($likes)');
 
-    parameters['busca'] = '%${busca.trim()}%';
+    parameters['busca'] = '%${buscaLimpa.trim()}%';
   }
 
   Map<String, dynamic> toMap(LeadDto entity) {
