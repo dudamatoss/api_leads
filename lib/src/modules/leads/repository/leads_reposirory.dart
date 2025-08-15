@@ -144,7 +144,7 @@ class LeadsRepository implements ILeadsRepository {
       'parceiro'
     ];
 
-    final likes = campos.map((c) => "REGEXP_REPLACE($c, '[-./]', '', 'g') ILIKE @busca").join(' OR ');
+    final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
     clauses.add('($likes)');
 
     parameters['busca'] = '%${buscaLimpa.trim()}%';
