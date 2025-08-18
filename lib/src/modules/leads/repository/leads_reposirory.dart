@@ -186,6 +186,15 @@ class LeadsRepository implements ILeadsRepository {
     }
     return map;
   }
+  DateTime? _parseDateTime(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    return DateTime.tryParse(value.toString());
+  }
 
   LeadDto fromMap(Map<String, dynamic> map) => LeadDto(
     id_leads_comercial: map['id_leads_comercial'],
@@ -198,7 +207,7 @@ class LeadsRepository implements ILeadsRepository {
     status: StatusEnum.fromName(map['status']),
     fonte: map['fonte'],
     interesse: InteresseEnum.fromName(map['interesse'] ?? ''),
-    data_hora: map['data_hora'],
+    data_hora: _parseDateTime(map['data_hora']),
     parceiro: map['parceiro'],
   );
 }
