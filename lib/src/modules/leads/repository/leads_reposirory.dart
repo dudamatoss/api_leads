@@ -127,7 +127,9 @@ class LeadsRepository implements ILeadsRepository {
       ) {
     if (busca == null || busca.trim().isEmpty) return;
     final termoDeBuscaTexto = busca.trim();
-    final buscaLimpa = termoDeBuscaTexto.replaceAll(RegExp(r'[-./]'), '');
+    final isEmail = termoDeBuscaTexto.contains('@');
+    final buscaLimpa =
+    isEmail ? termoDeBuscaTexto : termoDeBuscaTexto.replaceAll(RegExp(r'[-./]'), '');
 
     var buscaData = termoDeBuscaTexto;
     final dataRegex = RegExp(r'^(\d{2})\/(\d{2})\/(\d{4})$');
