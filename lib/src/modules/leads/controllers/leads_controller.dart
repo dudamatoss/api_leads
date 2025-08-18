@@ -60,15 +60,13 @@ class LeadsController {
   @ApiResponse(500, description: 'Erro interno do servidor', content: ApiContent(type: 'application/json'))
   @ApiSecurity(['apiKey'])
   @Get('/totais')
-  Future<LeadTotaisDto> getAllTotal(@Query('fonte') String? fonte, @Query('parceiro') String? parceiro,
-      @Query('interesse') String? interesse, @Query('status') String? status, @Query('limit') int? limit, @Query('busca') String? busca) {
+  Future<LeadTotaisDto> getAllTotal(
+      @Query('status') String? status,@Query('limit') int? limit) {
     final pagination = Pagination.fromQuery(null, limit);
     final filters = LeadsFilters(
-      fonte: fonte,
+
       status: status,
-      interesse: interesse,
-      parceiro: parceiro,
-      busca: busca
+
     );
     return _leadsService.getAllTotal(filters, pagination.limit);
   }
