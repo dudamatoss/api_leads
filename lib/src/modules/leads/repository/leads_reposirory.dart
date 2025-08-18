@@ -126,11 +126,20 @@ class LeadsRepository implements ILeadsRepository {
       Map<String, dynamic> parameters,
       ) {
     if (busca == null || busca.trim().isEmpty) return;
+    final termoDeBuscaTexto = busca.trim();
+    final buscaLimpa = termoDeBuscaTexto.replaceAll(RegExp(r'[-./]'), '');
 
-    final buscaLimpa = busca.replaceAll(RegExp(r'[-./]'), '');
+    var buscaData = termoDeBuscaTexto;
+    final dataRegex = RegExp(r'^(\d{2})\/(\d{2})\/(\d{4})$');
+    final match = dataRegex.firstMatch(termoDeBuscaTexto);
+    if (match != null) {
+      final dia = match.group(1)!;
+      final mes = match.group(2)!;
+      final ano = match.group(3)!;
+      buscaData = '$ano-$mes-$dia';
+    }
 
     final campos = [
-      'data_hora :: text',
       'nome',
       'email',
       'cnpj',
@@ -145,9 +154,14 @@ class LeadsRepository implements ILeadsRepository {
     ];
 
     final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
-    clauses.add('($likes)');
+    clauses.add('''
+      ($likes OR
+      TO_CHAR(data_hora, 'DD/MM/YYYY') ILIKE @buscaData OR
+      TO_CHAR(data_hora, 'YYYY-MM-DD') ILIKE @buscaData)
+    ''');
 
     parameters['busca'] = '%${buscaLimpa.trim()}%';
+    parameters['buscaData'] = '%$buscaData%';
   }
 
   Map<String, dynamic> toMap(LeadDto entity) {
