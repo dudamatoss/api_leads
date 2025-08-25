@@ -79,7 +79,7 @@ class LeadsRepository implements ILeadsRepository {
       sql.write(' AND ${whereClauses.join(' AND ')}');
     }
 
-    sql.write(' ORDER BY id_${tableName} ASC LIMIT @limit OFFSET @offset;');
+    sql.write(' ORDER BY data_hora DESC LIMIT @limit OFFSET @offset;');
 
     final rows = await _database.query(
       sql: sql.toString(),
