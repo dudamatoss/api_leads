@@ -15,20 +15,21 @@ import 'package:vaden/vaden.dart';
     final updateValues = Map<String, dynamic>.from(values);
     final idColumn = 'id_$tableName';
     final idValue = updateValues.remove(idColumn);
+    if (idValue == null) {
+      throw ArgumentError('Campo $idColumn é obrigatório para atualização.');
+    }
 
-    // Cria a lista de colunas e parâmetros para a query
-    final columns = updateValues.keys.join(', ');
-    final params = updateValues.keys.map((e) => '@$e').join(', ');
-    // Verifica se a tabela possui o id e cria a query de inserção ou atualização
-      final updateSet = updateValues.keys
-          .map((key) => '$key = @$key')
-          .join(', ');
+    if (updateValues.isEmpty) {
+      throw ArgumentError('Nenhum valor informado para atualização.');
+    }
 
-      final query = '''
+    final updateSet = updateValues.keys.map((key) => '$key = @$key').join(', ');
+
+    final query = '''
       UPDATE $tableName
       SET $updateSet
       WHERE $idColumn = @id_$tableName
-       ''';
+    ''';
       updateValues['id_$tableName'] = idValue;
 
     await _executeQuery(query: query, parameters: updateValues, txn: txn);

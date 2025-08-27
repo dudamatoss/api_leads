@@ -64,7 +64,8 @@ class LeadsRepository implements ILeadsRepository {
       meio,
       anuncio,
       status,
-      parceiro
+      parceiro,
+      cidade
     FROM $tableName
     WHERE 1=1
      
@@ -152,7 +153,8 @@ class LeadsRepository implements ILeadsRepository {
       'anuncio',
       'interesse',
       'status',
-      'parceiro'
+      'parceiro',
+      'cidade'
     ];
 
     final likes = campos.map((c) => "$c ILIKE @busca").join(' OR ');
@@ -172,6 +174,18 @@ class LeadsRepository implements ILeadsRepository {
     if (entity.id_leads_comercial != null) {
       map['id_leads_comercial'] = entity.id_leads_comercial;
     }
+    if (entity.nome != null) {
+      map['nome'] = entity.nome;
+    }
+    if (entity.email != null) {
+      map['email'] = entity.email;
+    }
+    if (entity.cnpj != null) {
+      map['cnpj'] = entity.cnpj;
+    }
+    if (entity.telefone != null) {
+      map['telefone'] = entity.telefone;
+    }
 
     if (entity.interesse != null) {
       map['interesse'] = entity.interesse!.toName();
@@ -183,6 +197,9 @@ class LeadsRepository implements ILeadsRepository {
 
     if (entity.parceiro != null) {
       map['parceiro'] = entity.parceiro;
+    }
+    if(entity.cidade != null){
+      map['cidade'] = entity.cidade;
     }
     return map;
   }
@@ -209,5 +226,6 @@ class LeadsRepository implements ILeadsRepository {
     interesse: InteresseEnum.fromName(map['interesse'] ?? ''),
     data_hora: _parseDateTime(map['data_hora']),
     parceiro: map['parceiro'],
+    cidade: map['cidade'],
   );
 }
