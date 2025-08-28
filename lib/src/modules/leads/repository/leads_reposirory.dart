@@ -96,8 +96,13 @@ class LeadsRepository implements ILeadsRepository {
       ) {
 
     if (filters.fonte != null && filters.fonte!.isNotEmpty) {
-      sql.write(' AND fonte = @fonte');
-      parameters['fonte'] = filters.fonte;
+      if (filters.fonte!.toLowerCase() == 'outros') {
+        sql.write(
+            " AND (LOWER(fonte) NOT IN ('instagram', 'facebook', 'google') OR fonte IS NULL)");
+      } else {
+        sql.write(' AND fonte = @fonte');
+        parameters['fonte'] = filters.fonte;
+      }
     }
 
     if (filters.status != null && filters.status!.isNotEmpty) {
